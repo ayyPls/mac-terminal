@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://fonts.cdnfonts.com/css/helvetica-neue-55" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/menlo" rel="stylesheet">
+                
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* TODO: use new vw and vh values for mobile device */
+            width: 100vw;
+            height: 100vh;
+            background-color: gray;
+            margin: 0;
+        }
+
+        #trans {
+            background: pink;
+            width: 500px;
+            height: 300px;
+            /* testing transform container and text inside */
+            /* transform: rotateY(50deg) translate3d(80px, 80px, 427px) perspective(600px) rotateZ(15deg); */
+        }
+
+        .window {
+            width: 60vw;
+            height: 50vh;
+            background-color: #1E1E1E   ;
+            border-radius: 16px;
+        }
+
+        header {
+            background-color: #3E3833;
+            height: 2.5vh;
+            display: flex;
+            border-radius: 10px 10px 0 0;
+            border: 1px solid black;
+            font-family:  'Helvetica Neue';
+        }
+
+        .window-actions button {
+            border-radius: 100%;
+            height: 1.5vh;
+            width: 1.5vh;
+            padding: 0;
+            border: none;
+        }
+
+        .window-actions {
+            display: flex;
+            align-items: center;
+            gap: .5vh;
+            margin-left: 1vh;
+        }
+
+        .window-actions #window-close {
+            background: #EA7069;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-right: 6.5vh;
+            font-weight: 400;
+            color: white;
+        }
+
+        .window-actions #window-hide {
+            background: #F9BC54;
+        }
+
+        .window-actions #window-fullscreen {
+            background: #60C751;
+        }
+
+        .terminal-content{
+            font-family: 'Menlo', sans-serif;
+            color: white;
+            padding: 1vh;
+            word-break: break-all;
+            
+        }
+    </style>
+</head>
+
+<!-- TODO: color themes -->
+<!-- TODO: 3d transform on mouse move -->
+<!-- TODO: hide and animate to leave inside mac alike bottom panel -->
+<!-- TODO:add area-label- data for interactive elements -->
+
+<body>
+    <div class="window">
+        <header>
+            <div class="window-actions">
+                <button id="window-close"></button>
+                <button id="window-hide"></button>
+                <button id="window-fullscreen"></button>
+            </div>
+            <!-- TODO: add folder icon -->
+            <h1>bin — -ayyPls — 82×26</h1>
+        </header>
+        <div class="terminal-content">
+            ayyPls@Mac % <br/>
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ut expedita id molestiae sed, itaque, rem minus quibusdam beatae qui officiis, quis ab saepe sit tempore dolorem veniam. Alias praesentium illum commodi amet pariatur architecto. Veniam excepturi blanditiis id voluptatem nihil nulla doloremque totam accusantium natus at dicta saepe velit debitis a vel, et optio autem molestiae est distinctio quibusdam? Eius excepturi veniam vitae porro reprehenderit temporibus quo a sint, nulla cupiditate sit! Soluta ducimus libero similique incidunt ab aliquam quis, cumque delectus blanditiis minima, voluptate neque numquam. Necessitatibus minus architecto accusantium! Officia natus nobis eaque, ut eligendi quibusdam atque maxime.
+        </div>
+    </div>
+</body>
+
+</html>
