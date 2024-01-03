@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ayyPls Desktop</title>
     <link href="https://fonts.cdnfonts.com/css/helvetica-neue-55" rel="stylesheet">
     <link href="https://fonts.cdnfonts.com/css/menlo" rel="stylesheet">
-                
+
     <style>
         body {
             display: flex;
@@ -28,11 +28,16 @@
             /* transform: rotateY(50deg) translate3d(80px, 80px, 427px) perspective(600px) rotateZ(15deg); */
         }
 
+        /* TODO: add border for widow to create window thickness on different angles based on transform x/y attributes via css ? */
+
         .window {
             width: 60vw;
             height: 50vh;
-            background-color: #1E1E1E   ;
+            background-color: #1E1E1E;
             border-radius: 16px;
+            /* do you need preserve 3d for multiple windows? */
+            transform-style: preserve-3d;
+            transition: transform .01s ease-in .01s;
         }
 
         header {
@@ -40,8 +45,7 @@
             height: 2.5vh;
             display: flex;
             border-radius: 10px 10px 0 0;
-            border: 1px solid black;
-            font-family:  'Helvetica Neue';
+            font-family: 'Helvetica Neue';
         }
 
         .window-actions button {
@@ -50,6 +54,7 @@
             width: 1.5vh;
             padding: 0;
             border: none;
+            cursor: pointer;
         }
 
         .window-actions {
@@ -83,23 +88,45 @@
             background: #60C751;
         }
 
-        .terminal-content{
+        .terminal-content {
             font-family: 'Menlo', sans-serif;
             color: white;
             padding: 1vh;
             word-break: break-all;
-            
+            overflow-y: scroll;
+            overflow-x: hidden;
+            height: 100%;
+            /* TODO: adjust max height of terminal content based on styled scrollbar width/height*/
+            max-height: calc(100% - 5.5vh);
+        }
+
+        .terminal-content textarea {
+            resize: none;
+            width: 100%;
+            /* height: 100%; */
+            background-color: transparent;
+            border: none;
+            color: white;
+            font-family: 'Menlo', sans-serif;
+            font-size: 16px;
+            padding: 0;
+            /* style caret ? */
         }
     </style>
+
 </head>
 
 <!-- TODO: color themes -->
 <!-- TODO: 3d transform on mouse move -->
 <!-- TODO: hide and animate to leave inside mac alike bottom panel -->
 <!-- TODO:add area-label- data for interactive elements -->
+<!-- TODO: эффект как в опенинге моба психо разложения на слои при повороте мышкой?? -->
+<!-- TODO: управлять наклоном терминала на мобильном через наклон телефона и показывать подсказку на этом перед открытием сайта -->
+<!-- TODO: добавить несколько других окон на задний фон чтобы показывать при повороте (можно их раскрывать из центра в бока при изменении положения мышки)-->
+<!-- TODO: одно из окон - канвас, в котором можно рисовать? /блокнот/окно просмотра фото и там гифка ayyPls/мини окошко яндекс музыки с эмулированным плеером/ мини браузер с рикроллом -->
 
 <body>
-    <div class="window">
+    <div id="window" class="window">
         <header>
             <div class="window-actions">
                 <button id="window-close"></button>
@@ -109,11 +136,53 @@
             <!-- TODO: add folder icon -->
             <h1>bin — -ayyPls — 82×26</h1>
         </header>
-        <div class="terminal-content">
-            ayyPls@Mac % <br/>
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ut expedita id molestiae sed, itaque, rem minus quibusdam beatae qui officiis, quis ab saepe sit tempore dolorem veniam. Alias praesentium illum commodi amet pariatur architecto. Veniam excepturi blanditiis id voluptatem nihil nulla doloremque totam accusantium natus at dicta saepe velit debitis a vel, et optio autem molestiae est distinctio quibusdam? Eius excepturi veniam vitae porro reprehenderit temporibus quo a sint, nulla cupiditate sit! Soluta ducimus libero similique incidunt ab aliquam quis, cumque delectus blanditiis minima, voluptate neque numquam. Necessitatibus minus architecto accusantium! Officia natus nobis eaque, ut eligendi quibusdam atque maxime.
+        <div id="terminal-content" class="terminal-content">
+            ayyPls@Mac ~ % [type <span style="color: #F9BC54;">help</span> to get list of commands]
+            <textarea id="terminal-textarea"></textarea>
         </div>
     </div>
+    <script>
+        const maxAngle = 30
+        const { width, height } = document.body.getBoundingClientRect()
+        const halfScreenWidth = width / 2
+        const halfScreenHeight = height / 2
+
+        const windowElement = document.getElementById('window')
+        const terminalContentElement = document.getElementById('terminal-content')
+        const terminalTextareaElement = document.getElementById('terminal-textarea')
+
+
+        terminalContentElement.addEventListener('click', () => {
+            // terminalContentElement.focus()
+        })
+
+
+        window.addEventListener('mousemove', (e) => {
+
+            // y window axis angles (deg)
+            //   0^
+            //  30|
+            //  15|
+            //  0 |
+            // -15|
+            // -30|
+            //     —————————> 
+            // -30 15 0 15 30
+            // x window axis angles (deg) 
+
+            const isCursorOnLeft = e.clientX < halfScreenWidth
+            const deltaX = (e.clientX - halfScreenWidth) // width from center
+            const deltaXAngle = deltaX / halfScreenWidth * maxAngle // delta angle based on cursor x position
+            const resultAngleX = isCursorOnLeft ? deltaXAngle : 360 - deltaXAngle // result x angle in degrees
+
+            const isCursorOnTop = e.clientY < halfScreenHeight
+            const deltaY = (e.clientY - halfScreenHeight) // height from center
+            const deltaYAngle = deltaY / halfScreenHeight * maxAngle // delta angle based on cursor y position
+
+            windowElement.style.transform = `rotateY(${deltaXAngle}deg) rotateX(${-deltaYAngle}deg) perspective(600px)`
+            windowElement.style.boxShadow = `lightgray ${-deltaXAngle}px ${-deltaYAngle}px`
+        })
+    </script>
 </body>
 
 </html>
