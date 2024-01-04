@@ -112,18 +112,46 @@
             padding: 0;
             /* style caret ? */
         }
+
+        #textarea {
+            /* visibility: hidden; */
+            /* z-index: -1000; */
+            /* opacity: 0;
+            width: 0;
+            height: 0; */
+        }
+
+        .terminal-content > #caret {
+            display: inline-block;
+            width: 6px;
+            height: 14px;
+            background-color: white;
+            animation: ease-in-out infinite 1s;
+            animation-name: test;
+        }
+
+        @keyframes test {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
     </style>
 
 </head>
 
-<!-- TODO: color themes -->
-<!-- TODO: 3d transform on mouse move -->
-<!-- TODO: hide and animate to leave inside mac alike bottom panel -->
+<!-- TODO:color themes -->
+<!-- TODO:hide and animate to leave inside mac alike bottom panel -->
 <!-- TODO:add area-label- data for interactive elements -->
-<!-- TODO: эффект как в опенинге моба психо разложения на слои при повороте мышкой?? -->
-<!-- TODO: управлять наклоном терминала на мобильном через наклон телефона и показывать подсказку на этом перед открытием сайта -->
-<!-- TODO: добавить несколько других окон на задний фон чтобы показывать при повороте (можно их раскрывать из центра в бока при изменении положения мышки)-->
-<!-- TODO: одно из окон - канвас, в котором можно рисовать? /блокнот/окно просмотра фото и там гифка ayyPls/мини окошко яндекс музыки с эмулированным плеером/ мини браузер с рикроллом -->
+<!-- TODO:эффект как в опенинге моба психо разложения на слои при повороте мышкой?? -->
+<!-- TODO:управлять наклоном терминала на мобильном через наклон телефона и показывать подсказку на этом перед открытием сайта -->
+<!-- TODO:добавить несколько других окон на задний фон чтобы показывать при повороте (можно их раскрывать из центра в бока при изменении положения мышки)-->
+<!-- TODO:одно из окон - канвас, в котором можно рисовать? /блокнот/окно просмотра фото и там гифка ayyPls/мини окошко яндекс музыки с эмулированным плеером/ мини браузер с рикроллом -->
+<!-- TODO: заменить мышку на мышку на макбуке -->
+<!-- TODO: анимация для появления текста -->
 
 <body>
     <div id="window" class="window">
@@ -137,11 +165,19 @@
             <h1>bin — -ayyPls — 82×26</h1>
         </header>
         <div id="terminal-content" class="terminal-content">
-            ayyPls@Mac ~ % [type <span style="color: #F9BC54;">help</span> to get list of commands]
-            <textarea id="terminal-textarea"></textarea>
+            ayyPls@Mac ~ type <span style="color: #F9BC54;">help</span> to get list of commands.<br />
+            <!-- <textarea id="terminal-textarea"></textarea> -->
         </div>
+        <textarea id="textarea"></textarea>
     </div>
     <script>
+
+        // TODO: whoami command
+        const COMMANDS = {
+            "help": "you used help command. \n welcome to my app!",
+            "whoami": "Hello! My name is Egor and currently I am a front end developer at IPST, Tomsk."
+        }
+
         const maxAngle = 30
         const { width, height } = document.body.getBoundingClientRect()
         const halfScreenWidth = width / 2
@@ -149,12 +185,48 @@
 
         const windowElement = document.getElementById('window')
         const terminalContentElement = document.getElementById('terminal-content')
-        const terminalTextareaElement = document.getElementById('terminal-textarea')
+        const terminalTextareaElement = document.getElementById('textarea')
+
+        const allChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_- '
+        terminalTextareaElement.onkeyup = e => {
+            console.log(e)
+            console.log(allChars.includes(e.key))
+            if (e.code == "Backspace") {
+                // if last char is special char (last char from command) => do not erase char
+                if (allChars.includes(terminalContentElement.innerText.at(-1))) {
+                    terminalContentElement.innerText = terminalContentElement.innerText.slice(0, -1)
+                }
+            }
+            if (e.code == "Enter") {
+                // terminalContentElement.innerText = ''
+                const value = e.target.value.replace('\n', '')//get clear cmd from input string
+                // const value = e.target.value.replace('\n', '').match(/\w+/g).join(' ')//get clear cmd from input string
+                // TODO: add command into history
+                if (COMMANDS[value]) {
+                    terminalContentElement.innerText += `\nayyPls@Mac ~ ${COMMANDS[value]}\n`
+                }
+                else {
+                    terminalContentElement.innerText += `\nayyPls@Mac ~ Unknown command "${value}". Use "help" command to get list of available commands.\n`
+                    // handle unknown command
+                }
+                terminalTextareaElement.value = ''
+                terminalContentElement.innerHTML += '<span id="caret"></span>'
+            }
+            else if (allChars.includes(e.key)) {
+
+                // console.log(terminalContentElement.innerText, e.key, terminalContentElement.innerText + e.key)
+                terminalContentElement.innerText += e.key
+                terminalContentElement.innerHTML += '<span id="caret"></span>'
+            }            // else e.preventDefault()
+            terminalContentElement.scrollTop = terminalContentElement.scrollHeight
 
 
-        terminalContentElement.addEventListener('click', () => {
-            // terminalContentElement.focus()
-        })
+        }
+
+
+        terminalContentElement.onclick = () => {
+            terminalTextareaElement.focus()
+        }
 
 
         window.addEventListener('mousemove', (e) => {
@@ -179,7 +251,7 @@
             const deltaY = (e.clientY - halfScreenHeight) // height from center
             const deltaYAngle = deltaY / halfScreenHeight * maxAngle // delta angle based on cursor y position
 
-            windowElement.style.transform = `rotateY(${deltaXAngle}deg) rotateX(${-deltaYAngle}deg) perspective(600px)`
+            windowElement.style.transform = `rotateY(${deltaXAngle}deg) rotateX(${-deltaYAngle}deg) perspective(900px)`
             windowElement.style.boxShadow = `lightgray ${-deltaXAngle}px ${-deltaYAngle}px`
         })
     </script>
