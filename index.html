@@ -155,6 +155,124 @@
             width: 100%;
         }
 
+        .window.player {
+            width: 40vh;
+            height: 45vh;
+            bottom: 30vh;
+            right: 15vw;
+            z-index: -2;
+        }
+
+        .album-cover {
+            margin: 2.5vh auto 0 auto;
+            width: 60%;
+            height: 60%;
+            border-radius: 16px;
+        }
+
+        .album-cover img {
+            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            border-radius: 16px;
+        }
+
+        .player-actions {
+            margin-top: 1.5vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* перевести в % от ширины блока */
+            gap: 2vh;
+
+        }
+
+        .player-actions button {
+            background: none;
+            border-radius: 100%;
+            color: white;
+            border: 1px solid white;
+        }
+
+        .player-actions button.play {
+            border-radius: 100%;
+            width: 5vh;
+            height: 5vh;
+            background-image: url('./play.svg');
+            background-size: 50%;
+            background-repeat: no-repeat;
+            background-position: 60% 50%;
+            background-color: white;
+        }
+
+        button.pause {
+            background-image: url('./pause.svg');
+            border-radius: 100%;
+            width: 5vh;
+            height: 5vh;
+            background-size: 80%;
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+            background-color: white;
+        }
+
+        button.prev {
+            background-image: url('./prev.svg');
+            border-radius: 100%;
+            width: 3vh;
+            height: 3vh;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+        }
+
+        button.next {
+            rotate: 180deg;
+            background-image: url('./prev.svg');
+            border-radius: 100%;
+            width: 3vh;
+            height: 3vh;
+            background-size: 100%;
+            background-repeat: no-repeat;
+            background-position: 50% 50%;
+        }
+
+        button.arrow-back-button {
+            position: absolute;
+            top: 0;
+            margin-top: 1vh;
+            margin-left: 1.5vh;
+            background-image: url('./arrow-back.svg');
+            width: 3vh;
+            height: 3vh;
+            background-color: none;
+            background-size: 70%;
+            background-repeat: no-repeat;
+            border: none;
+            background-color: transparent;
+            background-position: 50% 50%;
+        }
+
+
+
+        .player-song {
+            margin: 1.5vh auto 0 auto;
+            text-align: center;
+            color: white;
+        }
+
+        .player-song p {
+            margin: 0;
+        }
+
+        .window#image,
+        .window#player {
+            opacity: 0;
+            z-index: 100;
+        }
+
+
+
         @keyframes test {
             0% {
                 opacity: 0;
@@ -177,6 +295,8 @@
 <!-- TODO:одно из окон - канвас, в котором можно рисовать? /блокнот/окно просмотра фото и там гифка ayyPls/мини окошко яндекс музыки с эмулированным плеером/ мини браузер с рикроллом -->
 <!-- TODO: заменить мышку на мышку на макбуке -->
 <!-- TODO: анимация для появления текста -->
+<!-- TODO: окна зумить (увеличивать) при наведении в углы, и поворот делать в обратную сторону от консоли по оси y(вроде?) чтобы смотрели лицом в сторону терминала -->
+<!-- TODO: каждый раз когда меняется opacity до нуля подменять контент в окне (другая песня, другая гифка итд) -->
 
 <body>
     <div id="window" class="window">
@@ -203,7 +323,7 @@
         <div id="terminal-content" class="terminal-content">ayyPls@Mac ~ type "help" to get list of commands<br /></div>
         <textarea id="textarea"></textarea>
     </div>
-    <div class="window image">
+    <div id="image" class="window image">
         <header>
             <div class="window-actions">
                 <button id="window-close"></button>
@@ -215,12 +335,33 @@
             </div>
         </header>
     </div>
+
+    <div id="player" class="window player">
+        <button type="button" class="arrow-back-button">
+        </button>
+
+        <div class="album-cover">
+            <img src="./cover.jpg" />
+        </div>
+        <div class="player-song">
+            <p>Get Rickrolled</p>
+            <p>Rick Astley</p>
+        </div>
+        <div class="player-actions">
+            <button class="prev"></button>
+            <button class="play"></button>
+            <button class="next"></button>
+        </div>
+    </div>
+    <!-- <div class="window notes">
+
+    </div> -->
     <script>
 
         // TODO: commands list: [clear, dir?, theme, projects, socials?, ...]
         const COMMANDS = {
-            "help": "you used help command. \nWelcome to my app!",
-            "whoami": "Hello! My name is Egor and currently I am a front end developer at IPST, Tomsk.",
+            "help": "you used help command. \nWelcome to my app!\n\nAvailable commands:\n\nhelp - calls this menu with list of available commands\nwhoami - my personal info\ntheme - change window appearance\nprojects - get list of my projects\ndir - list of files in current directory\nclear - clear terminal\n",
+            "whoami": "Hello! My name is Egor and currently I am a front end developer at IPST, Tomsk. I'm interested in web development, especially reactive applications and 3D in web and currently work on some pet projects for myself. I like to create new things, like pixelart, games, videos, web design and stuff like this.\n\nYou can follow me here:\ngithub -- https://github.com/ayyPls\n\n",
             "theme": "use list of themes to change window appearance",
             "dir": "\n./\n../\nindex.html\nayyPls.gif\nindex.js\n",
             "clear": ""
@@ -304,6 +445,7 @@
             const isCursorOnTop = e.clientY < halfScreenHeight
             const deltaY = (e.clientY - halfScreenHeight) // height from center
             const deltaYAngle = deltaY / halfScreenHeight * maxAngle // delta angle based on cursor y position
+            // const resultAngleY = isCursorOnLeft ? deltaYAngle : 360 - deltaYAngle // result x angle in degrees
 
             for (const element of windowElements) {
                 // переписать на переменные? подобным образом
@@ -313,7 +455,13 @@
                 element.style.boxShadow = `lightgray ${-deltaXAngle}px ${-deltaYAngle}px`
                 // если не окно терминала
                 if (element.id !== 'window') {
-                    element.style.transform+=`translateX(${deltaXAngle}vh) translateY(${deltaYAngle}vh)`
+                    element.style.transform = `rotateY(${deltaXAngle}deg) rotateX(${-deltaYAngle}deg) translateX(${deltaXAngle}vh) translateY(${deltaYAngle}vh)`
+                    element.style.boxShadow = `lightgray ${deltaXAngle}px ${deltaYAngle}px`
+                    if (element.id == 'player')
+                        element.style.opacity = Math.min(deltaXAngle / maxAngle,  deltaYAngle / maxAngle)
+                    if(element.id == 'image'){
+                        element.style.opacity = Math.min( - deltaXAngle / maxAngle,   - deltaYAngle / maxAngle)
+                    }
                 }
             }
         })
